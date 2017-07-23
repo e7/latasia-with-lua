@@ -318,38 +318,21 @@ void lts_shmtx_unlock(lts_atomic_t *lock)
 }
 
 
-static void enable_accept_events(void)
+void enable_accept_events(void)
 {
-    if (lts_accept_lock_hold) {
-        return;
-    }
-
     for (int i = 0; lts_listen_array[i]; ++i) {
-        lts_socket_t *ls = lts_listen_array[i];
-
-        (*lts_event_itfc->event_add)(ls);
+        (*lts_event_itfc->event_add)(lts_listen_array[i]);
     }
-    lts_accept_lock_hold = TRUE;
 
     return;
 }
 
 
-#define holding_lock()      lts_accept_lock_hold
-
-
-static void disable_accept_events(void)
+void disable_accept_events(void)
 {
-    if (! lts_accept_lock_hold) {
-        return;
-    }
-
     for (int i = 0; lts_listen_array[i]; ++i) {
-        lts_socket_t *ls = lts_listen_array[i];
-
-        (*lts_event_itfc->event_del)(ls);
+        (*lts_event_itfc->event_del)(lts_listen_array[i]);
     }
-    lts_accept_lock_hold = FALSE;
 
     return;
 }
@@ -434,6 +417,18 @@ int event_loop_single(void)
             break;
         }
 
+        if (lts_sockcache_n > 0) {
+            if (lts_accept_disabled) {
+                lts_accept_disabled = FALSE;
+                enable_accept_events();
+            }
+        } else {
+            if (! lts_accept_disabled) {
+                lts_accept_disabled = TRUE;
+                disable_accept_events();
+            }
+        }
+
         rslt = (*lts_event_itfc->process_events)();
 
         if (0 != rslt) {
@@ -497,6 +492,7 @@ int event_loop_multi(void)
         if (lts_accept_disabled < 0) {
             if (lts_shmtx_trylock((lts_atomic_t *)lts_accept_lock.addr)) {
                 // 抢锁成功
+                lts_accept_lock_hold = TRUE;
                 enable_accept_events();
             }
         } else {
@@ -505,7 +501,8 @@ int event_loop_multi(void)
 
         rslt = (*lts_event_itfc->process_events)();
 
-        if (holding_lock()) {
+        if (lts_accept_lock_hold) {
+            lts_accept_lock_hold = FALSE;
             disable_accept_events();
             lts_shmtx_unlock((lts_atomic_t *)lts_accept_lock.addr);
         }

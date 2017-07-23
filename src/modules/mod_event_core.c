@@ -96,22 +96,6 @@ static void lts_accept(lts_socket_t *ls)
     lts_pool_t *cpool;
     lts_app_module_itfc_t *app_itfc;
 
-    if (s_event_core_ctx.current_conns >= lts_main_conf.max_connections) {
-        // 达到最大连接数
-        ls->readable = 0;
-        (void)lts_write_logger(
-            &lts_file_logger, LTS_LOG_WARN,
-            "%s:max count of connections achived, refuse to accept\n",
-            STR_LOCATION
-        );
-
-        return;
-    }
-
-    if (0 == lts_sockcache_n) {
-        abort();
-    }
-
     nodelay = 1;
     cmnct_fd = lts_accept4(ls->fd, (struct sockaddr *)clt,
                            &clt_len, SOCK_NONBLOCK);
@@ -140,6 +124,8 @@ static void lts_accept(lts_socket_t *ls)
     }
 
     // 新连接初始化
+    ASSERT(lts_sockcache_n > 0);
+
     cpool = lts_create_pool(CONN_POOL_SIZE);
     if (NULL == cpool) {
         lts_close_conn_orig(cmnct_fd, TRUE);

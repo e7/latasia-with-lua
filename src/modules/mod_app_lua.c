@@ -593,6 +593,7 @@ static void mod_on_received(lts_socket_t *s)
     // 解码
     while ((tsk = lts_op_instance(&s->task_rsc))) {
         if (-1 == lts_proto_sjsonb_decode(s->conn->rbuf, &contype, &content)) {
+            fprintf(stderr, "invalid sjsonb\n");
             lts_op_release(&s->task_rsc, tsk);
             break;
         }
