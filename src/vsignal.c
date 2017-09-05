@@ -58,7 +58,7 @@ static void sig_chld_handler(int s)
 static void sig_pipe_handler(int s)
 {
     lts_signals_mask |= LTS_MASK_SIGPIPE;
-    abort();
+    dump_stack_frames();
 
     return;
 }
