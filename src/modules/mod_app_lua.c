@@ -206,7 +206,6 @@ void tcp_on_read(lts_socket_t *s)
     bufsz = lua_tointeger(L, -1);
     lua_pop(L, 1);
     if (bufsz > lts_buffer_space(rbuf)) {
-        fprintf(stderr, "lua: receive too large\n");
         lua_pushnil(L);
         lua_pushinteger(L, E_FAILED);
         (void)lua_resume(L, 2);
@@ -546,6 +545,7 @@ int api_push_sbuf(lua_State *s)
 }
 
 
+static int task_handler(dlist_t *nd);
 static void mod_on_connected(lts_socket_t *s)
 {
     lua_State *L;
@@ -587,13 +587,19 @@ static void mod_on_connected(lts_socket_t *s)
 static void mod_on_received(lts_socket_t *s)
 {
     task_t *tsk;
-    uint16_t contype;
-    lts_str_t content = lts_null_string;
+    uint16_t contype; // 解出的内容类型
+    lts_str_t content = lts_null_string; // 解出的内容
+    lts_buffer_t *rbuf = s->conn->rbuf;
 
     // 解码
-    while ((tsk = lts_op_instance(&s->task_rsc))) {
+    while (lts_buffer_pending(rbuf) > 0) {
+        if (NULL == (tsk = lts_op_instance(&s->task_rsc))) {
+            // 当前无任务对象可用
+            break;
+        }
+
         if (-1 == lts_proto_sjsonb_decode(s->conn->rbuf, &contype, &content)) {
-            fprintf(stderr, "invalid sjsonb\n");
+            // 解码失败
             lts_op_release(&s->task_rsc, tsk);
             break;
         }
@@ -605,11 +611,15 @@ static void mod_on_received(lts_socket_t *s)
         dlist_add_tail(&lts_task_list, &tsk->node);
     }
 
+    dlist_for_each_f_safe(tmp, cur_next, &lts_task_list) {
+        (void)task_handler(tmp);
+    }
+
     return;
 }
 
 
-static int mod_on_service(dlist_t *nd)
+int task_handler(dlist_t *nd)
 {
     int r;
     lua_State *L;
@@ -713,7 +723,6 @@ static void mod_on_closing(lts_socket_t *s)
 static lts_app_module_itfc_t lua_itfc = {
     &mod_on_connected,
     &mod_on_received,
-    &mod_on_service,
     &mod_on_sent,
     &mod_on_closing,
 };

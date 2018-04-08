@@ -106,11 +106,13 @@ int lts_proto_sjsonb_decode(
     }
 
     if (! valid_header) {
+        fprintf(stderr, "invalid header\n");
         return -1;
     }
 
     if (lts_buffer_pending(buf) < sizeof(header) + header.content_len) {
         // 内容长度不足
+        fprintf(stderr, "not enough\n");
         return -1;
     }
 

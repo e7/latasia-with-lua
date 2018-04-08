@@ -36,10 +36,10 @@ int load_conf_file(lts_file_t *file, uint8_t **addr, off_t *sz)
     }
 
     // 配置文件size检查
-    if (st.st_size > MAX_CONF_SIZE) {
+    if ((st.st_size == 0) || (st.st_size > MAX_CONF_SIZE)) {
         lts_file_close(file);
         (void)lts_write_logger(&lts_stderr_logger, LTS_LOG_ERROR,
-                               "%s:too large configuration file\n",
+                               "%s:invalid configuration file size\n",
                                STR_LOCATION);
         return -1;
     }

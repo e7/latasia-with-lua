@@ -373,13 +373,6 @@ void process_post_list(void)
         }
     }
 
-    // 新请求通知应用层
-    if (app_itfc->on_service) {
-        dlist_for_each_f_safe(tmp, cur_next, &lts_task_list) {
-            (void)(*app_itfc->on_service)(tmp);
-        }
-    }
-
     return;
 }
 
