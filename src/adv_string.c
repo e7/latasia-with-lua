@@ -8,6 +8,7 @@
 
 #define __THIS_FILE__       "src/adv_string.c"
 
+lts_str_t lts_zero_string = lts_string("");
 
 // 区间反转，i和j分别为起始和结束下标
 static void __reverse_region(uint8_t *data, int i, int j)

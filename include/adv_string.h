@@ -82,6 +82,10 @@ typedef struct {
 #define lts_string(str)         {(uint8_t *)(str), sizeof(str) - 1,}
 #define lts_null_string         {NULL, 0,}
 
+// 空字符串
+extern lts_str_t lts_zero_string;
+
+
 static inline
 void lts_str_init(lts_str_t *str, uint8_t *data, ssize_t len)
 {
