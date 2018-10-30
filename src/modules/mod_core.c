@@ -122,7 +122,7 @@ int init_core_master(lts_module_t *module)
     // 配置检查
     if (lts_main_conf.max_connections + 32 > lts_rlimit.open_max) {
         (void)lts_write_logger(
-                &lts_stderr_logger, LTS_LOG_WARN,
+                &lts_stderr_logger, LTS_LOG_EMERGE,
                 "%s:too small max open files to set max connections\n",
                 STR_LOCATION
         );

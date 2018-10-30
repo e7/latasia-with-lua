@@ -20,7 +20,7 @@ extern "C" {
 // default configuration {{
 #define MAX_CONF_SIZE           65535
 #define ENABLE_IPV6             FALSE
-#define MODULE_POOL_SIZE        (1024 * 1024)
+#define MODULE_POOL_SIZE        (1024 * 1024 * 32)
 #define CONN_POOL_SIZE          (1024 * 32)
 #define RBUF_SIZE               (1024 * 12)
 #define SBUF_SIZE               (1024 * 4)
