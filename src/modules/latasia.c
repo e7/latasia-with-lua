@@ -234,11 +234,14 @@ int lts_accept_lock_hold;
 int lts_use_accept_lock;
 pid_t lts_pid;
 int lts_process_role;
+
+// 启用的模块
 lts_module_t *lts_modules[] = {
     &lts_core_module,
     &lts_event_core_module,
     &lts_event_epoll_module,
-    &lts_app_lua_module,
+    &lts_app_echo_module,
+    // &lts_app_lua_module,
     NULL,
 };
 lts_module_t *lts_module_event_cur;

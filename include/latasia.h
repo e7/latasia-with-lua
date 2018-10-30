@@ -110,6 +110,7 @@ extern lts_module_t lts_core_module; // 核心模块
 extern lts_module_t lts_event_core_module; // 事件核心模块
 extern lts_module_t lts_event_epoll_module; // epoll事件模块
 // app模块 {{
+extern lts_module_t lts_app_echo_module; // echo模块
 extern lts_module_t lts_app_lua_module; // lua模块
 // }} app模块
 
