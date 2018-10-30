@@ -1,4 +1,5 @@
 #include "adv_string.h"
+#include "public.h"
 
 
 void common_test(void)
@@ -44,8 +45,6 @@ void find_test(void)
 void split_test(void)
 {
 #ifdef ADV_STRING_ENHANCE
-    extern size_t lts_sys_pagesize;
-
     lts_str_t **rslt;
     uint8_t s1[] = ",,,,asafdas";
     uint8_t s2[] = "asas,,,,asafdas";
@@ -61,7 +60,6 @@ void split_test(void)
     lts_str_t ls_s6 = lts_string(s6);
     lts_pool_t *pool;
 
-    lts_sys_pagesize = 4096;
     pool = lts_create_pool(4096);
 
     rslt = lts_str_split(&ls_s1, ',', pool);
@@ -135,6 +133,8 @@ void base64_test(void)
 
 int main(void)
 {
+    lts_rlimit.sys_pagesize = 4096;
+
     common_test();
     find_test();
     split_test();

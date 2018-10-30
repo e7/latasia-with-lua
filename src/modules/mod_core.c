@@ -2,6 +2,7 @@
 #include "vsignal.h"
 #include "logger.h"
 #include "latasia.h"
+#include "public.h"
 
 #define __THIS_FILE__       "src/modules/mod_core.c"
 
@@ -116,6 +117,16 @@ int init_core_master(lts_module_t *module)
         (void)lts_write_logger(&lts_stderr_logger, LTS_LOG_WARN,
                                "%s:load config failed, using default\n",
                                STR_LOCATION);
+    }
+
+    // 配置检查
+    if (lts_main_conf.max_connections + 32 > lts_rlimit.open_max) {
+        (void)lts_write_logger(
+                &lts_stderr_logger, LTS_LOG_WARN,
+                "%s:too small max open files to set max connections\n",
+                STR_LOCATION
+        );
+        return -1;
     }
 
     // 初始化日志

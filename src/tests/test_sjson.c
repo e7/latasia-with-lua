@@ -1,10 +1,8 @@
 #include <assert.h>
 
+#include "public.h"
 #include "simple_json.h"
 #include "extra_errno.h"
-
-
-size_t lts_sys_pagesize = 4096;
 
 
 void dump_string(lts_str_t *str)
@@ -315,6 +313,7 @@ int main(void)
     lts_pool_t *pool;
     lts_sjson_t output;
 
+    lts_rlimit.sys_pagesize = 4096;
     pool = lts_create_pool(256);
     if (NULL == pool) {
         fprintf(stderr, "errno:%d\n", errno);

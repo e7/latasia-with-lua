@@ -1,14 +1,11 @@
 #include "common.h"
 #include "extra_errno.h"
 #include "mem_pool.h"
+#include "public.h"
 
 #define __THIS_FILE__       "src/mem_pool.c"
 
-
 #define MIN_POOL_SIZE       4096
-
-
-size_t lts_sys_pagesize;
 
 
 struct lts_pool_data_s {
@@ -48,12 +45,12 @@ static void *lts_palloc_block(lts_pool_t *pool, size_t size)
     size_t psize;
     lts_pool_data_t *new_block, *iter;
 
-    ASSERT(lts_sys_pagesize > 0);
+    ASSERT(lts_rlimit.sys_pagesize > 0);
 
     psize  = (size_t)LTS_ALIGN(
         sizeof(lts_pool_data_t) + pool->max_size, LTS_WORD
     );
-    p = (uint8_t *)lts_memalign(lts_sys_pagesize, psize);
+    p = (uint8_t *)lts_memalign(lts_rlimit.sys_pagesize, psize);
     if (NULL == p) {
         // log
         return NULL;
@@ -100,7 +97,7 @@ lts_pool_t *lts_create_pool(size_t size)
         size = MIN_POOL_SIZE;
     }
 
-    p = (uint8_t *)lts_memalign(lts_sys_pagesize, size);
+    p = (uint8_t *)lts_memalign(lts_rlimit.sys_pagesize, size);
     if (NULL == p) {
         // log
         return NULL;

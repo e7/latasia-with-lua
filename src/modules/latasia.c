@@ -16,6 +16,7 @@
 #include "conf.h"
 #include "vsignal.h"
 #include "rbt_timer.h"
+#include "public.h"
 
 #define __THIS_FILE__       "src/modules/latasia.c"
 
@@ -218,8 +219,6 @@ static char const *__lts_errno_desc[] = {
 char const **lts_errno_desc = __lts_errno_desc;
 lts_sm_t lts_global_sm; // 全局状态机
 lts_str_t lts_cwd = {__lts_cwd_buf, 0,}; // 当前工作目录
-int lts_cpu_conf; // cpu总核数
-int lts_cpu_onln; // 可用cpu核数
 lts_atomic_t lts_signals_mask; // 信号掩码
 
 int lts_module_count; // 模块计数
@@ -719,7 +718,7 @@ int worker_main(void)
         int cpuid;
         cpu_set_t cpuset;
 
-        cpuid = lts_pid % lts_cpu_onln;
+        cpuid = lts_pid % lts_rlimit.cpu_online;
         CPU_ZERO(&cpuset);
         CPU_SET(cpuid, &cpuset);
         if (-1 == sched_setaffinity(0, sizeof(cpuset), &cpuset)) {
@@ -873,9 +872,10 @@ int main(int argc, char *argv[], char *env[])
     lts_module_t *module;
 
     // 全局初始化
-    lts_cpu_conf = (int)sysconf(_SC_NPROCESSORS_CONF);
-    lts_cpu_onln = (int)sysconf(_SC_NPROCESSORS_ONLN);
-    lts_sys_pagesize = (size_t)sysconf(_SC_PAGESIZE);
+    lts_rlimit.open_max = sysconf(_SC_OPEN_MAX);
+    lts_rlimit.cpu_total = (int)sysconf(_SC_NPROCESSORS_CONF);
+    lts_rlimit.cpu_online = (int)sysconf(_SC_NPROCESSORS_ONLN);
+    lts_rlimit.sys_pagesize = (size_t)sysconf(_SC_PAGESIZE);
     lts_module_count = 0;
     lts_process_role = LTS_MASTER; // 进程角色
     lts_init_log_prefixes();

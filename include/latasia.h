@@ -99,7 +99,6 @@ extern void lts_close_conn(lts_socket_t *cs, int reset);
 
 extern lts_sm_t lts_global_sm; // 全局状态机
 extern lts_str_t lts_cwd; // 当前工作目录
-extern size_t lts_sys_pagesize; // 系统内存页
 extern lts_atomic_t lts_signals_mask; // 信号掩码
 
 extern int lts_module_count; // 模块计数
