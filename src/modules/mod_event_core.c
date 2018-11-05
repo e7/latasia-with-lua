@@ -155,10 +155,12 @@ static void lts_accept(lts_socket_t *ls)
     // 加入定时器
     lts_timer_node_init(&cs->timer_node, 0, &lts_evt_timeout);
     if (lts_main_conf.keepalive > 0) {
-        int64_t reset = lts_current_time + lts_main_conf.keepalive * 10;
+        int64_t death_moment = lts_current_time + lts_main_conf.keepalive * 10;
 
-        while (-1 == lts_timer_reset(&lts_timer_heap, &cs->timer_node, reset)) {
-            ++reset;
+        while (-1 == lts_timer_modify(
+            &lts_timer_heap, &cs->timer_node, TIMEOUT_RESET, death_moment
+        )) {
+            ++death_moment;
         }
     }
 

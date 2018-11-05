@@ -66,6 +66,17 @@ typedef volatile sig_atomic_t lts_atomic_t;
 typedef struct timeval lts_timeval_t;
 
 
+/**
+ * 计算整型绝对值
+ */
+#define ABS_INTEGER(x) (\
+    ((x)^((x) >> (8*sizeof(x)-1))) - ((x) >> (8*sizeof(x)-1))\
+)
+
+
+/**
+ * 原子比较交换
+ */
 static inline
 int lts_atomic_cmp_set(lts_atomic_t *lock, sig_atomic_t old, sig_atomic_t set)
 {

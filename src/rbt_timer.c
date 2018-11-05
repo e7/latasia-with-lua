@@ -16,15 +16,25 @@ int lts_timer_add(lts_timer_t *heap, lts_timer_node_t *node)
     return lts_rbmap_add(heap, &node->mapnode);
 }
 
-
-int lts_timer_reset(lts_timer_t *heap,
-                    lts_timer_node_t *node,
-                    uintptr_t timeout)
+/**
+ * 修改超时时间
+ */
+int lts_timer_modify(lts_timer_t *heap,
+                     lts_timer_node_t *node,
+                     lts_timer_modtype_t modtype,
+                     int64_t timeout)
 {
     // 删除旧结点，已存在其它节点则忽略
     (void)lts_rbmap_safe_del(heap, &node->mapnode);
 
-    node->mapnode.key = timeout;
+    if (TIMEOUT_RESET == modtype) {
+        node->mapnode.key = (uintptr_t)ABS_INTEGER(timeout);
+    } else if (TIMEOUT_EXTRA == modtype) {
+        node->mapnode.key += (uintptr_t)ABS_INTEGER(timeout);
+    } else {
+        ASSERT(FALSE);
+    }
+
     return lts_rbmap_add(heap, &node->mapnode);
 }
 

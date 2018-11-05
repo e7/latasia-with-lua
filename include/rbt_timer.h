@@ -42,9 +42,18 @@ typedef lts_rbmap_t lts_timer_t; // 定时器
 
 extern int lts_timer_add(lts_timer_t *heap, lts_timer_node_t *node);
 
-extern int lts_timer_reset(lts_timer_t *heap,
-                           lts_timer_node_t *node,
-                           uintptr_t timeout);
+typedef enum {
+    TIMEOUT_RESET = 1, // 重置
+    TIMEOUT_EXTRA, // 加时
+} lts_timer_modtype_t;
+/**
+ * 修改超时时间
+ * timeout 函数内取绝对值
+ */
+extern int lts_timer_modify(lts_timer_t *heap,
+                            lts_timer_node_t *node,
+                            lts_timer_modtype_t modtype,
+                            int64_t timeout);
 extern int lts_timer_del(lts_timer_t *heap, lts_timer_node_t *node);
 extern lts_timer_node_t *lts_timer_min(lts_timer_t *heap);
 
