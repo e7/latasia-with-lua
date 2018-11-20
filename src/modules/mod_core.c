@@ -36,7 +36,7 @@ int load_main_config(lts_conf_t *conf, lts_pool_t *pool)
 
     off_t sz;
     uint8_t *addr;
-    int rslt;
+    int rslt = 0;
     lts_file_t lts_conf_file = {
         -1, {
             (uint8_t *)CONF_FILE, sizeof(CONF_FILE) - 1,
@@ -107,7 +107,9 @@ int init_core_master(lts_module_t *module)
     // 创建内存池
     pool = lts_create_pool(MODULE_POOL_SIZE);
     if (NULL == pool) {
-        // log
+        (void)lts_write_logger(&lts_stderr_logger, LTS_LOG_WARN,
+                               "%s:create core module pooll failed\n",
+                               STR_LOCATION);
         return -1;
     }
     module->pool = pool;

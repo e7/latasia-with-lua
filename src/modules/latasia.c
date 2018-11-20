@@ -892,6 +892,7 @@ int main(int argc, char *argv[], char *env[])
     lstack_set_empty(&stk);
 
     // 构造核心模块
+    rslt = 0;
     for (int i = 0; lts_modules[i]; ++i) {
         module = lts_modules[i];
 
@@ -912,6 +913,11 @@ int main(int argc, char *argv[], char *env[])
         lstack_push(&stk, &module->s_node);
     }
     if (-1 == rslt) {
+        (void)lts_write_logger(
+                &lts_stderr_logger, LTS_LOG_EMERGE,
+                "%s:something went wrong when init some core module\n",
+                STR_LOCATION);
+
         while (! lstack_is_empty(&stk)) {
             module = CONTAINER_OF(lstack_top(&stk), lts_module_t, s_node);
             lstack_pop(&stk);

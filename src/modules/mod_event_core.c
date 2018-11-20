@@ -303,7 +303,7 @@ static void free_listen_sockets(void)
 
 static int init_event_core_master(lts_module_t *mod)
 {
-    int rslt;
+    int rslt = 0;
     lts_pool_t *pool;
 
     // 全局初始化
@@ -322,6 +322,9 @@ static int init_event_core_master(lts_module_t *mod)
     // 创建内存池
     pool = lts_create_pool(MODULE_POOL_SIZE);
     if (NULL == pool) {
+        (void)lts_write_logger(&lts_file_logger, LTS_LOG_ERROR,
+                               "%s:create event core module pool failed\n",
+                               STR_LOCATION);
         return -1;
     }
     mod->pool = pool;
@@ -329,13 +332,19 @@ static int init_event_core_master(lts_module_t *mod)
     // 创建accept共享内存锁
     rslt = lts_shm_alloc(&lts_accept_lock);
     if (0 != rslt) {
-        return rslt;
+        (void)lts_write_logger(&lts_file_logger, LTS_LOG_ERROR,
+                               "%s:alloc accept lock failed\n",
+                               STR_LOCATION);
+        return -1;
     }
 
     // 创建监听套接字
     rslt = alloc_listen_sockets(pool);
     if (0 != rslt) {
-        return rslt;
+        (void)lts_write_logger(&lts_file_logger, LTS_LOG_ERROR,
+                               "%s:alloc listen socket failed\n",
+                               STR_LOCATION);
+        return -1;
     }
 
     // 建立socket缓存
@@ -493,9 +502,11 @@ void lts_evt_send(lts_socket_t *cs)
 
     if (0 == lts_buffer_pending(buf)) { // no more sending
         cs->writable = 0;
+        lts_buffer_clear(buf);
+        (*app_itfc->on_sent)(cs); // 通知应用层发送完毕
+
         return;
     }
-    ASSERT(lts_buffer_pending(buf) > 0);
 
     // 发送数据
     sent_sz = send(cs->fd, buf->seek, lts_buffer_pending(buf), 0);
@@ -515,9 +526,7 @@ void lts_evt_send(lts_socket_t *cs)
 
         return;
     }
-
     buf->seek += sent_sz;
-    (*app_itfc->on_sent)(cs); // 通知应用层可写
 
     return;
 }

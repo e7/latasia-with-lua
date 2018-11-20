@@ -30,9 +30,3 @@ TARGET_LINK_LIBRARIES(test_rbmap mcheck)
 
 ADD_EXECUTABLE(test_obj_pool tests/test_obj_pool.c obj_pool.c)
 TARGET_LINK_LIBRARIES(test_obj_pool mcheck)
-
-#remove_definitions(-std=gnu99)
-SET_SOURCE_FILES_PROPERTIES(tests/fake_server.cc PROPERTIES LANGUAGE CXX)
-ADD_EXECUTABLE(fake_server protocol_sjsonb.c buffer.c mem_pool.c adv_string.c
-                           rbtree.c simple_json.c base64.c public.c tests/fake_server.cc)
-TARGET_LINK_LIBRARIES(fake_server mcheck pthread)

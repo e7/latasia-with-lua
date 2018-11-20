@@ -59,8 +59,10 @@ static void mod_on_received(lts_socket_t *s)
     //s->conn->rbuf = s->conn->sbuf;
     //s->conn->sbuf = p;
 
+    lts_buffer_clear(s->conn->rbuf);
     lts_buffer_append(s->conn->sbuf, demo_html_header, sizeof(demo_html_header));
     lts_buffer_append(s->conn->sbuf, demo_html_body, sizeof(demo_html_body));
+    lts_soft_event(s, LTS_SOFT_WRITE);
 }
 
 
