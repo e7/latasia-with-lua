@@ -881,6 +881,11 @@ int main(int argc, char *argv[], char *env[])
     lts_init_log_prefixes();
     lts_update_time();
 
+    (void)lts_write_logger(
+            &lts_stderr_logger,
+            LTS_LOG_NOTICE,
+            LINK_WITH_PTHREAD ? "work with pthread\n" : "work without pthread\n");
+
     // 初始化信号处理
     if (-1 == lts_init_sigactions(lts_process_role)) {
         (void)lts_write_logger(&lts_stderr_logger,

@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <sysexits.h>
+#include <pthread.h>
 
 #include <stdint.h>
 #include <stdarg.h>
@@ -92,6 +93,12 @@ int lts_atomic_cmp_set(lts_atomic_t *lock, sig_atomic_t old, sig_atomic_t set)
 
     return res;
 }
+
+__attribute__((weak)) int pthread_create(
+        pthread_t *thread, const pthread_attr_t *attr,
+        void *(*start_routine) (void *), void *arg
+);
+#define LINK_WITH_PTHREAD (0 != pthread_create)
 
 extern char const **lts_errno_desc;
 
