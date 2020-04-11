@@ -197,7 +197,13 @@ int lts_str_find(lts_str_t *text, lts_str_t *pattern, int offset)
     return rslt;
 }
 
-
+/**
+ * 字符串比较
+ * 返回值：
+ *     0：二者相等
+ *     正：a > b
+ *     负：a < b
+ */
 int lts_str_compare(lts_str_t *a, lts_str_t *b)
 {
     int rslt = 0;
@@ -216,9 +222,9 @@ int lts_str_compare(lts_str_t *a, lts_str_t *b)
 
     // 未分胜负
     if (a->len > b->len) {
-        rslt = a->data[i];
+        rslt = ~(1<<31);
     } else {
-        rslt = -b->data[i];
+        rslt = (1<<31);
     }
 
     return rslt;
