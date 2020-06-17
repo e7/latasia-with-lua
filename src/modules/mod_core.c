@@ -200,7 +200,7 @@ int init_core_master(lts_module_t *module)
         return -1;
     }
     strpid.data = (uint8_t *)lts_palloc(pool, strpid.len);
-    lts_i642str(&strpid, lts_pid);
+    lts_i642str(&strpid, lts_pid, FALSE);
     (void)lts_file_write(&lts_pid_file,
                          strpid.data, strpid.len, &lts_stderr_logger);
     lts_file_close(&lts_pid_file);

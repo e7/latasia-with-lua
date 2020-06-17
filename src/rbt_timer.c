@@ -75,7 +75,7 @@ void lts_time_string(lts_str_t *tm)
 
     memset(tmstr, 0, sizeof(tmstr));
     lts_str_init(tm, tmstr, sizeof(tmstr));
-    lts_i642str(tm, lts_current_time);
+    lts_i642str(tm, lts_current_time, FALSE);
 }
 
 

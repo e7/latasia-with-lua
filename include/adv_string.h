@@ -83,21 +83,30 @@ typedef struct {
 #define lts_null_string         {NULL, 0,}
 
 // 空字符串
-extern lts_str_t lts_zero_string;
+extern lts_str_t lts_empty_string;
 
-
-static inline
-void lts_str_init(lts_str_t *str, uint8_t *data, ssize_t len)
+static inline void lts_str_init(lts_str_t *str, uint8_t *data, ssize_t len)
 {
     str->data = data;
     str->len = len;
 }
 
-static inline
-void lts_str_share(lts_str_t *dst, lts_str_t const *src)
+static inline void lts_str_share(lts_str_t *dst, lts_str_t const *src)
 {
     dst->data = src->data;
     dst->len = src->len;
+}
+
+static inline ssize_t i64_width(int64_t x)
+{
+    ssize_t rslt = ((x < 0) ? 1 : 0);
+
+    do {
+        ++rslt;
+        x /= 10;
+    } while (x);
+
+    return rslt;
 }
 
 
@@ -121,7 +130,8 @@ extern int lts_str_compare(lts_str_t *a, lts_str_t *b);
 extern int lts_str_find(lts_str_t *text, lts_str_t *pattern, int offset);
 
 // int64转字符串
-extern int lts_i642str(lts_str_t *str, int64_t x);
+extern void lts_i642str(lts_str_t *str, int64_t x, int check);
+extern int64_t lts_str2i64(const lts_str_t *str);
 
 // print
 extern void lts_str_println(FILE *stream, lts_str_t *s);

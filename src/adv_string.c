@@ -8,7 +8,7 @@
 
 #define __THIS_FILE__       "src/adv_string.c"
 
-lts_str_t lts_zero_string = lts_string("");
+lts_str_t lts_empty_string = lts_string("");
 
 // 区间反转，i和j分别为起始和结束下标
 static void __reverse_region(uint8_t *data, int i, int j)
@@ -197,13 +197,7 @@ int lts_str_find(lts_str_t *text, lts_str_t *pattern, int offset)
     return rslt;
 }
 
-/**
- * 字符串比较
- * 返回值：
- *     0：二者相等
- *     正：a > b
- *     负：a < b
- */
+
 int lts_str_compare(lts_str_t *a, lts_str_t *b)
 {
     int rslt = 0;
@@ -222,9 +216,9 @@ int lts_str_compare(lts_str_t *a, lts_str_t *b)
 
     // 未分胜负
     if (a->len > b->len) {
-        rslt = ~(1<<31);
+        rslt = a->data[i];
     } else {
-        rslt = (1<<31);
+        rslt = -b->data[i];
     }
 
     return rslt;
@@ -350,28 +344,13 @@ ssize_t lts_str_filter_multi(lts_str_t *src, uint8_t *c, ssize_t len)
 }
 
 
-static ssize_t i64_width(int64_t x)
-{
-    ssize_t rslt = ((x < 0) ? 1 : 0);
-
-    do {
-        ++rslt;
-        x /= 10;
-    } while (x);
-
-    return rslt;
-}
-
-
-int lts_i642str(lts_str_t *str, int64_t x)
+void lts_i642str(lts_str_t *str, int64_t x, int check)
 {
     ssize_t last = 0;
     int64_t absx = labs(x);
     uint32_t oct_bit;
 
-    if ((str->len + 1) < i64_width(x)) {
-        return -1;
-    }
+    if (check) { ASSERT((str->len + 1) >= i64_width(x)); }
 
     do {
         oct_bit = absx % 10;
@@ -384,8 +363,18 @@ int lts_i642str(lts_str_t *str, int64_t x)
     __reverse_region(str->data, 0, last - 1);
     str->data[last] = 0;
     str->len = last;
+}
 
-    return 0;
+
+int64_t lts_str2i64(const lts_str_t *str)
+{
+    int64_t result = 0;
+
+    for (int i = 0; i < str->len; ++i) {
+        result = result * 10 + str->data[i] - '0';
+    }
+
+    return result;
 }
 
 
