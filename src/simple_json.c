@@ -558,6 +558,11 @@ int lts_sjson_decode(lts_str_t *src, lts_sjson_t *output)
                     li_node = NULL;
                 } else {
                     ++li_node->val.len;
+                    // 略过转义字符
+                    if ('\\' == src->data[i]) {
+                        ++i;
+                        ++li_node->val.len;
+                    }
                 }
             } else {
                 if ('"' == src->data[i]) {
@@ -577,6 +582,11 @@ int lts_sjson_decode(lts_str_t *src, lts_sjson_t *output)
                     json_kv = NULL;
                 } else {
                     ++json_kv->val.len;
+                    // 略过转义字符
+                    if ('\\' == src->data[i]) {
+                        ++i;
+                        ++json_kv->val.len;
+                    }
                 }
             }
             continue;
