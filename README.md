@@ -1,2 +1,7 @@
 # latasia-with-lua
-<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg" alt="996.icu"></a>
+
+### 简单benchmark（netty golang c） 
+
+![netty](https://github.com/e7/latasia-with-lua/blob/master/readme/wrk-netty.png)
+![golang](https://github.com/e7/latasia-with-lua/blob/master/readme/wrk-gohttp.png)
+![c](https://github.com/e7/latasia-with-lua/blob/master/readme/wrk-latasia.png)
